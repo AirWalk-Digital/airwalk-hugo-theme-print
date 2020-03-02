@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html
+  class=""
+  lang="{{ .Site.LanguageCode }}"
+  prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
+>
+<head>
+  <title>{{ .Title }}</title>
+  <link rel="canonical" href="{{ .Permalink }}" />
+  {{ $style := resources.Get "scss/print.scss" | resources.ExecuteAsTemplate "print.scss" . | toCSS }}
+  <link rel="stylesheet" href="{{ ($style).RelPermalink }}">
+  {{ $style_page := resources.Get "scss/pdf-page.scss" | resources.ExecuteAsTemplate "pdf-page.scss" . | toCSS }}
+  <link rel="stylesheet" href="{{ ($style_page).RelPermalink }}">
+
+
+
+  <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+  
+</head>
+  <body
+  lang="{{ .Site.LanguageCode }}"
+  class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns"
+  itemscope
+  itemtype="http://schema.org/Article"
+>
+<!-- <div id="bannertop" class="mt5">
+  <h2 id="title">{{ .Title }}</h2>
+</div> -->
+<article id="banner" class="mt5">
+
+    <h2 id="title">{{ .Title }}</h2>
+
+</article>
+
+
+                {{ $img := "<img src=\"" }}
+                {{ range .Resources}}
+                <!-- {{ .RelPermalink}} -->
+                {{ end }}
+                {{ $path:= .Dir}}
+                {{ $dstimg := (printf "%s%s" "<img src=\"/" $path ) }}
+                {{ replace .Content $img $dstimg | safeHTML }}
+
+
+</body></html>                

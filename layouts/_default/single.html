@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html
+  class=""
+  lang="{{ .Site.LanguageCode }}"
+  prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
+>
+  <head>
+    <title>{{ .Title }}</title>
+    <link rel="canonical" href="{{ .Permalink }}" />
+    <link rel="stylesheet" href="/css/print.css" />
+
+
+    <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+    
+  </head>
+  <body
+  lang="{{ .Site.LanguageCode }}"
+  class="sans-serif w-90 w-60-ns center center-ns mv2 mv5-ns"
+  itemscope
+  itemtype="http://schema.org/Article"
+>
+<div class="pdfshow">  {{ partial "pdf_title.html" . }}</div>
+
+<!-- Contents Page -->
+
+{{ if eq $.Site.Data.customer.documentation.contents true }}<article id="contents"><h2>Contents</h2>{{ end }}
+{{ with .Site.GetPage "/customer/introduction" }}<h3>Introduction</h3>{{ end }}
+
+{{ range where .Site.Pages "Section" "detail"}}
+    {{ if eq .Kind "section"}}
+        {{ $section := urlize .Title}}
+        {{ if isset $.Site.Data.customer.documentation.architecture $section }}
+            {{ $subpage := false}}
+            {{ range .Pages }}
+                <!-- Check there are sub pages of the chapter     -->
+                {{ $page := urlize .Title}}
+                {{ if eq (index $.Site.Data.customer.documentation.architecture $section $page) true }}
+                    {{ $subpage = true}}
+                {{ end }}
+            {{ end }}
+            {{ if $subpage }}
+                <h3>{{ .Title }}</h3><ul>
+            {{ end }}
+            {{ range .Pages }}
+                {{ $page := urlize .Title}}
+                {{ if eq (index $.Site.Data.customer.documentation.architecture $section $page) true }}
+                    <li>{{ .Title }}</li>
+                {{ end }}
+            {{ end }}
+        </ul>
+        {{ end }}
+    {{end}}
+{{ end }}
+
+{{ if eq $.Site.Data.customer.documentation.contents true }}</article>{{ end }}
+
+<!-- Introduction     -->
+{{ with .Site.GetPage "/customer/introduction" }}<article id="introduction"><h1>Introduction</h1> {{ .Render "single_print" }}</article>{{ end }}
+
+<!-- Content -->
+
+{{ range where .Site.Pages "Section" "detail"}}
+    {{ if eq .Kind "section"}}
+        {{ $chapter := urlize .Title}}
+        {{ $chaptertitle := .Title}}
+        {{ if isset $.Site.Data.customer.documentation.architecture $chapter }}
+            {{ range .Pages }}
+                {{ $section := urlize .Title}}
+                {{ if eq (index $.Site.Data.customer.documentation.architecture $chapter $section) true }}
+                       <!-- Chapter heading -->
+                    <div class="pdfshow">
+                        <article id="chapter">
+                            <h2 id="chapter-title">{{ $chaptertitle }}</h2>
+                            <br>
+                            <h2 id="chapter-title">{{ .Title }}</h2>
+                        </article>
+                    </div>  
+
+
+                    <!-- This is the common design document -->
+                    <section id="main" class="mt5">        
+                        <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+                        {{ .Render "single_print" }}
+                        </article>
+                    </section>
+
+                    <!-- This is the customer detail (design and impementation)-->
+                    {{ range where $.Site.Pages "Section" "customer"}}
+                        {{ if and (eq $chapter .Params.chapter) (eq $section .Params.section) }}
+                            <section id="main" class="mt5">        
+                                <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+                                    {{ .Render "single_print" }}
+                                </article>
+                            </section>        
+                        {{ end }}
+                    {{ end }}                    
+                {{ end }}
+            {{ end }}
+        {{ end }}
+    {{end}}
+{{ end }}
+
+<!-- Ad-hoc pages -->
+
+{{ range where $.Site.Pages "Section" "customer"}}
+    {{ if and (.Params.workstream) (.Params.section) }}
+        {{ .Params.workstream }} : {{ index $.Site.Data.customer.documentation.architecture .Params.workstream }} : {{.Params.workstream}}<br>
+            
+        {{ if (index $.Site.Data.customer.documentation.architecture .Params.workstream ) }}
+            <section id="main" class="mt5">        
+                <article itemprop="articleBody" id="content" class="w-90 lh-copy">
+                    <!-- <h1 id="{{printf "%s-%s" "standalone" .Title }}">{{ .Title }}</h1> -->
+                    {{ .Render "single_print" }}
+                </article>
+            </section>        
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ partial "footer.html" . }}
