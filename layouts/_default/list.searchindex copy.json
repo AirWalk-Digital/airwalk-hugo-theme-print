@@ -1,0 +1,40 @@
+[{{ range .Site.Home.Sections.ByWeight }}
+{{ if (not .Params.Hidden)}}
+{{ if and (not .Params.Hidden) (eq .Params.pdf true) }}
+{{ template "contentPage" dict "page" . }}
+{{ end }}
+{{ template "nested" dict "section" . }}
+{{ end }}
+{{ end }}
+{{ define "nested" }}
+{{ with .section}}
+{{ range .Sections.ByWeight }}
+{{ range .Sections.ByWeight }}
+{{ template "nested" dict "section" . }}
+{{ end }}
+{{ if and (not .Params.Hidden) (eq .Params.pdf true)}}
+{{ template "contentPage" dict "page" . }}
+{{ end }}
+{{ template "nested" dict "sect" . }}
+{{ range .Pages.ByWeight }}
+{{ if and (.IsSection) (not .Params.Hidden) (eq .Params.pdf true) }}
+{{ template "contentPage" dict "page" . }}
+{{ end }}
+{{ end }}
+{{ range .Pages.ByWeight }}
+{{ if and (not .IsSection) (not .Params.Hidden) (eq .Params.pdf true) }}
+{{ template "contentPage" dict "page" . }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}
+{{ define "contentPage" }}
+{{ with .page}}
+{
+    "uri": "{{ .Permalink }}",
+    "title": "{{ .Title}}",
+    "dir": "{{ .File.Dir }}"
+},
+{{ end }}
+{{ end }}]
