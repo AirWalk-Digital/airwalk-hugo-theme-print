@@ -1,8 +1,8 @@
 <html><body>
 
-	<h1>Index of pages for PDF output</h1>
+<h1>Index of pages for PDF output</h1>
 <table border=1>
-	<tr><th>PAGE</th><th>URL</th><th>PATH</th></tr>
+	<tr><th>PAGE</th><th>URL</th><th>PATH</th><th>Document Type</th><th>Document Ref#</th></tr>
 
 {{range .Site.Home.Sections.ByWeight}}
     {{if (not .Params.Hidden)}}
@@ -13,8 +13,6 @@
         {{ template "nested" dict "section" . }}
     {{ end }}
 {{ end }}
-
-
 
 <!-- templates -->
 {{ define "nested" }}
@@ -51,16 +49,63 @@
         {{ end }}
     {{ end }}
 {{ end }}
+</table>
 
-{{ define "contentPage" }}
-    {{ with .page}}
-      <tr><td>{{.Title}}</td><td>{{ .Permalink }}</td><td>{{ .File.Dir }}</td></tr>
-             
-        
+<h1>Index of pages for Knowledge output</h1>
+<table border=1>
+	<tr><th>PAGE</th><th>URL</th><th>PATH</th><th>Document Type</th><th>Document Ref#</th></tr>
+
+{{range .Site.Home.Sections.ByWeight}}
+    {{if (not .Params.Hidden)}}
+		{{if and (not .Params.Hidden) (in .Params.document_type "knowledge") }}
+            {{ template "contentPage" dict "page" . }}
+        {{ end }}
+        {{ template "nested_kb" dict "section" . }}
     {{ end }}
 {{ end }}
 
+<!-- templates -->
+{{ define "nested_kb" }}
+    {{ with .section}}
+<!-- Content nested in a section -->
+        {{ range .Sections.ByWeight }}
+        <!-- Sections -->
+            {{ range .Sections.ByWeight }}
+                {{/*  <h1>N_SECTION: {{.Title }}</h1>  */}}
+                {{ template "nested_kb" dict "section" . }}
+            {{ end }}
+        <!-- {{ .Title }} -->
+			{{if and (not .Params.Hidden) (in .Params.document_type "knowledge")}}
+				{{ template "contentPage" dict "page" . }}
+            {{ end }}
+            {{ template "nested_kb" dict "sect" . }}
+            {{ range .Pages.ByWeight }} 
+            <!-- Sections -->
+            <!-- {{ .Title }} -->
+                {{if and (.IsSection) (not .Params.Hidden) (in .Params.document_type "knowledge") }}
+                    {{/*  <h1>L_SECTION: {{.Title }}</h1>  */}}
+                    {{ template "contentPage" dict "page" . }}      
+                {{ end }}
+            {{ end }}
+            
+            {{ range .Pages.ByWeight }} 
+            <!-- Pages -->
+            <!-- {{ .Title }} -->
+				{{if and (not .IsSection) (not .Params.Hidden) (in .Params.document_type "knowledge") }}
+			{{/*  <h1>PAGE: {{.Title }}</h1>  */}}
+                    {{ template "contentPage" dict "page" . }}      
+                {{ end }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
 </table>
-
 </body></html>
-<!-- {{ partial "footer.html" . }} -->
+
+
+{{ define "contentPage" }}
+    {{ with .page}}
+    <tr><td>{{.Title}}</td><td>{{ .Permalink }}</td><td>{{ .File.Dir }}</td><td>{{ .Params.document_type }}</td><td>{{ .Params.document_reference }}</td></tr>
+    {{ end }}
+{{ end }}
+

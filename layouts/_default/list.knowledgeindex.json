@@ -1,0 +1,8 @@
+[{{- $begin := 0 -}}{{- range $index, $page := (where .Site.Pages ".Params.Type" "ne" "json") -}}
+{{- if and (ne $page.Type "json") (not $page.Params.Hidden) (in $page.Params.document_type "knowledge") -}}{{- if gt $begin 0 -}},{{- end }}
+{
+    "uri": "{{ $page.Permalink }}",
+    "title": "{{ $page.Title}}",
+    "dir": "{{ $page.File.Dir }}",
+    "kb": "{{ $page.Params.document_reference }}"
+}{{- $begin = 1 }}{{- end -}}{{- end -}}]
