@@ -4,5 +4,7 @@
     "uri": "{{ $page.Permalink }}",
     "title": "{{ $page.Title}}",
     "dir": "{{ $page.File.Dir }}",
-    "kb": "{{ $page.Params.document_reference }}"
+    "document_reference": "{{ $page.Params.document_reference }}",
+    "kb": "{{ $page.Params.knowledge.kb }}",
+    "category": "{{ $page.Params.knowledge.category }}"
 }{{- $begin = 1 }}{{- end -}}{{- end -}}]
