@@ -1,4 +1,6 @@
-{{ $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) }}
-{{ $small := $image.Resize "480x q50" }}
-$small.RelPermalink
-<img src="{{ $small.RelPermalink }}" alt="{{ .Text }}" {{ with .Title}} title="{{ . }}"{{ end }} />
+{{ $img := . }}
+{{ $image := .Destination}}
+{{ with .Page.Resources.GetMatch .Destination}}
+{{ $image := .Resize "480x q50" }}
+{{ end }}
+<img src="{{ $image }}" {{ with $img.Text}} alt="{{ . }}"{{ end }} {{ with $img.Title}} title="{{ . }}"{{ end }} />
